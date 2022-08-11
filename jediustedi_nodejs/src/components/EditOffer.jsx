@@ -13,7 +13,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 //da li obrisati props?
 
 function EditOffer(props) {
-  //const [users, setUsers] = useState([]); dovuci restorane
+  
   const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
 
   const [dish, setDish] = useState("");
@@ -25,12 +25,12 @@ function EditOffer(props) {
   const [status, setStatus] = useState("active");
   const [dateFrom, setDateFrom] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [msg, setMsg] = useState("");
 
   const { id } = useParams(); //izvlaci sve parametre iz URL-a
-  //const history = useHistory();
+
   let navigate = useNavigate();
-  //console.log("props" + props);
-  //console.log("id" + id);
+
   console.log(restaurant);
   useEffect(() => {
     axios
@@ -47,11 +47,7 @@ function EditOffer(props) {
       .catch((err) => console.log(err));
   }, []);
 
-  /* axios.get("http://localhost:5000/offers").then((response)=>{
-      setOffers(response.data.map((offer)=> offer.dish));
-  }).catch((error)=> {console.log(error);}, []);*/
-
-  const onChangeDish = (e) => {
+   const onChangeDish = (e) => {
     setDish(e.target.value);
   };
   const onChangeDishImg = (e) => {
@@ -60,26 +56,24 @@ function EditOffer(props) {
   const onChangePrice = (e) => {
     setPrice(e.target.value);
   };
-  /*const onChangeRestaurant = (e) => {
-    setRestaurant(e.target.value);
-  };
-  const onChangeCity = (e) => {
-    setCity(e.target.value);
-  };*/
+
   const onSubmit = (e) => {
     e.preventDefault();
-    axios.put(`http://localhost:5000/offers/${id}`, {
-      dish: dish,
-      dishImg: dishImg,
-      price: price,
-      restaurant: restaurant,
-      city: city,
-      status: status,
-      dateFrom: dateFrom,
-      endDate: endDate,
-    });
-
-    //history.push("/");
+    axios
+      .put(`http://localhost:5000/offers/${id}`, {
+        dish: dish,
+        dishImg: dishImg,
+        price: price,
+        restaurant: restaurant,
+        city: city,
+        status: status,
+        dateFrom: dateFrom,
+        endDate: endDate,
+      })
+      .then((res) => {
+        if (res.status === 200) setMsg("Ponuda uspešno dodata");
+        else setMsg("Došlo je do greške");
+      });
     navigate("/myoffers");
   };
   return (
@@ -140,6 +134,9 @@ function EditOffer(props) {
               </Box>
             </Stack>
           </LocalizationProvider>
+          <div>
+            <h2>{msg}</h2>
+          </div>
           <Box m={2} pt={3}>
             <Button variant="contained" type="submit" color="success">
               Sacuvaj

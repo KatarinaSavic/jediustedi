@@ -1,13 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
-//import users from "../Users";
 import axios from "axios";
 import "../App.css";
 import { Link, useNavigate } from "react-router-dom";
 import { Paper, Container, TextField, Box, Button } from "@mui/material";
 import { UserContext } from "../context/UserContext";
-//import { PartnerContext } from "../context/PartnerContext";
-//import { border } from "@mui/system";
-//import Offers from "./Offers"
 
 //import MailOutlineIcon from '@mui/icons-material/MailOutline';
 //import PasswordIcon from '@mui/icons-material/Password';
@@ -19,8 +15,6 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-
-  const [users, setUsers] = useState([]);
 
   const onChangeEmail = (e) => {
     setEmail(e.target.value);

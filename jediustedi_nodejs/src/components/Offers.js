@@ -9,18 +9,15 @@ import Offer from "./Offer";
 
 function Offers(props) {
   const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
-
   const [city, setCity] = useState("");
-
   const [clicked, setClicked] = useState(0);
-
   const [currentoffers, setCurrentOffers] = useState([]);
-
   const [cards, setCards] = useState([]);
-
-  const [userID, setUserID] = useState(loggedUser._id);
-
+  const [userID, setUserID] = useState(null);
+  const [restaurantName, setRestaurantName] = useState("");
+  //ucitavanje svih aktivnih ponuda iz baze
   useEffect(() => {
+    if (loggedUser !== null) setUserID(loggedUser._id);
     console.log("useEffect once");
     axios
       .get("http://localhost:5000/offers")
@@ -39,12 +36,9 @@ function Offers(props) {
       .catch((err) => console.log(err));
   }, []);
 
-  // console.log(cards);
-
   function takeCity(event) {
     const temp = event.target.value;
     setCity(temp);
-    // console.log(city);
   }
 
   var filteredlist = [];
@@ -98,6 +92,26 @@ function Offers(props) {
     );
     setClicked((x) => x + 1);
   };
+
+  /*const getRestaurantName = (restaurant_id) => {
+    return axios
+      .get(`http://localhost:5000/partners/${restaurant_id}`)
+      .then((res) => {
+        console.log(res.data);
+        return res.data;
+      });
+  };*/
+
+  const getRestaurantName = (restaurant_id) => {
+    console.log("restaurant " + restaurant_id);
+    return axios
+      .get(`http://localhost:5000/partners/${restaurant_id}`)
+      .then((res) => {
+        console.log(res.data);
+        setRestaurantName(res.data);
+        return res.data;
+      });
+  };
   return (
     <div class="containter-offers">
       <div class="city-selection">
@@ -111,7 +125,9 @@ function Offers(props) {
       </div>
       <div class="row">
         {cards.map((item) => {
-          //console.log("itemid" + item._id);
+          console.log("itemid" + item.restaurant);
+
+          getRestaurantName(item.restaurant);
           return (
             <Offer
               key={item._id}
@@ -119,7 +135,7 @@ function Offers(props) {
               dish={item.dish}
               dishImg={item.dishImg}
               price={item.price}
-              restaurant={item.restaurant}
+              restaurant={restaurantName}
               city={item.city}
               dateFrom={item.dateFrom}
               endDate={item.endDate}

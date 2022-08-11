@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const User = require("../models/user.model");
-const Partner = require("../models/partner.model");
-
+const User = require("../models/user.model"); //ucitavanje modela za fizicka lica
+const Partner = require("../models/partner.model"); //ucitavanje modela za poslovne partnere
 /**
- * LOGIN WS
+ * Proverava da li email pripada fizickom licu ili poslovnom partneru i da li je uneta lozinka tacna
+ * vraca ulogovanog korisnika i njegov tip
  */
 router.get("/:email/:pass", (req, response) => {
   User.findOne({ email: req.params.email }, (err, res) => {

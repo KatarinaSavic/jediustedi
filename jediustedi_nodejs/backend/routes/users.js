@@ -1,21 +1,21 @@
-const express = require("express");
-
-const router = express.Router();
-
-const User = require("../models/user.model");
+const express = require("express"); //ucitavanje biblioteke express
+const router = express.Router(); //ucitavanje biblioteke router
+const User = require("../models/user.model"); //ucitavanje modela za fizicka lica
 
 router.post("/", (req, res) => {
+  //čuvanje podataka iz poziva servisa
   const t_name = req.body.name;
   const t_email = req.body.email;
   const t_password = req.body.password;
   const t_type = req.body.type;
-
+  //kreiranje novog korisnika
   const user = new User({
     name: t_name,
     email: t_email,
     password: t_password,
     type: t_type,
   });
+  //Provera da li korisnik već postoji na osnovu email-a koji mora biti jedinstven
   User.findOne({ email: user.email }, (err, result) => {
     if (err) {
       res.status(400).send({ err, infoText: "Doslo je do greske" });
@@ -27,6 +27,7 @@ router.post("/", (req, res) => {
           "Registracija nije uspela, vec postoji korisnik sa istom email adresom.",
       });
     } else {
+      //cuvanje korisnika u bazi
       user
         .save()
         .then((user) =>

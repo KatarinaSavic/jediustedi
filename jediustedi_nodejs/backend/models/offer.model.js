@@ -1,6 +1,6 @@
-const { default: mongoose } = require("mongoose");
-const mongoode = require("mongoose");
+const { default: mongoose } = require("mongoose"); //ucitavanje mongoose biblioteke
 
+//definisanje seme za ponude poslovnih partnera
 const offerSchema = new mongoose.Schema({
   dish: { type: String, required: true },
   dishImg: { type: String, required: true },
@@ -11,7 +11,6 @@ const offerSchema = new mongoose.Schema({
   dateFrom: { type: Date },
   endDate: { type: Date },
 });
-
+//definisanje modela za ponude poslovnih partnera
 const Offer = mongoose.model("Offer", offerSchema);
-
 module.exports = Offer;

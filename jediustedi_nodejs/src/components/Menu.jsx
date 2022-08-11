@@ -22,7 +22,6 @@ function Menu() {
             Moje ponude
           </Link>
         )}
-
         {type === "partner" && (
           <Link to="/partnerprofile" class="nav-item">
             Moj profil

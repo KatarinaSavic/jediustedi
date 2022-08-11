@@ -1,10 +1,8 @@
-const express = require("express");
-
-const router = express.Router();
-
-const Partner = require("../models/partner.model");
-
+const express = require("express"); //ucitavanje biblioteke express
+const router = express.Router(); //ucitavanje biblioteke router
+const Partner = require("../models/partner.model"); //ucitavanje modela za poslovne partnere
 router.post("/", (req, res) => {
+  //čuvanje podataka iz poziva servisa
   const t_name = req.body.name;
   //const t_logo = req.body.logo;
   const t_address = req.body.address;
@@ -13,7 +11,7 @@ router.post("/", (req, res) => {
   const t_phone = req.body.phone;
   const t_email = req.body.email;
   const t_password = req.body.password;
-
+  //kreiranje novog korisnika
   const partner = new Partner({
     name: t_name,
     //logo: t_logo,
@@ -24,7 +22,7 @@ router.post("/", (req, res) => {
     email: t_email,
     password: t_password,
   });
-
+  //Provera da li korisnik već postoji na osnovu email-a koji mora biti jedinstven
   Partner.findOne({ email: partner.email }, (err, result) => {
     if (err) {
       res.status(400).send({ err, infoText: "Doslo je do greske" });
@@ -36,6 +34,7 @@ router.post("/", (req, res) => {
           "Registracija nije uspela, vec postoji korisnik sa istom email adresom.",
       });
     } else {
+      //cuvanje korisnika u bazi
       partner
         .save()
         .then((partner) =>
@@ -46,10 +45,23 @@ router.post("/", (req, res) => {
 });
 
 router.get("/", (req, res) => {
+  //pronalazi sve partnere iz baze i vraca sve parametre sem generickog id-ja
   Partner.find()
     .select("email name logo address city working_hours phone  -_id")
     .then((partners) => res.status(200).send(partners))
     .catch((err) => res.status(400).send(err));
+});
+
+router.get("/:id", (req, res) => {
+  Partner.findById(req.params.id)
+    .then((p) => {
+      if (p != null) res.status(200).send(p.name);
+      else {
+        res.status(404).send("Partner ne postoji");
+        console.log(res);
+      }
+    })
+    .catch((err) => res.status(500).send(err));
 });
 
 module.exports = router;

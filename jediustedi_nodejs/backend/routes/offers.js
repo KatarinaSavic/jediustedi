@@ -3,6 +3,7 @@ const router = require("express").Router();
 const Offer = require("../models/offer.model");
 
 router.get("/", (req, res) => {
+  //Vraca sve ponude iz baze iskljucujuci jedino polje verzija pri prikazu objekta
   Offer.find()
     .select("-__v")
     .then((offers) => res.status(200).send(offers))
@@ -10,6 +11,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
+  //čuvanje podataka iz poziva servisa
   const t_dish = req.body.dish;
   const t_dishImg = req.body.dishImg;
   const t_price = req.body.price;
@@ -18,7 +20,7 @@ router.post("/", (req, res) => {
   const t_status = req.body.status;
   const t_dateFrom = req.body.dateFrom;
   const t_endDate = req.body.endDate;
-
+  //kreiranje nove ponude
   const offer = new Offer({
     dish: t_dish,
     dishImg: t_dishImg,
@@ -30,6 +32,7 @@ router.post("/", (req, res) => {
     endDate: t_endDate,
   });
   console.log(JSON.stringify(offer));
+  //cuvanje ponude u bazi
   offer
     .save()
     .then((offer) => {
@@ -54,6 +57,7 @@ router.get("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
+  //pronalazi ponudu na osnovu prosledjenog ID-ja i brise je iz baze
   Offer.findByIdAndDelete(req.params.id)
     .then((o) => {
       if (o != null) res.status(200).send(o);
@@ -63,13 +67,11 @@ router.delete("/:id", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  console.log("novi");
-  console.log(JSON.stringify(req.body));
+  //pronalazi ponudu na osnovu prosledjenog ID-ja i azurira polja sa novim vrednostima
   Offer.findByIdAndUpdate(req.params.id, req.body)
     .then((o) => {
       if (o != null) {
         res.status(200).send(o);
-        console.log(o);
       } else res.status(404).send("Ponuda ne postoji");
     })
     .catch((err) => res.status(500).send(err));

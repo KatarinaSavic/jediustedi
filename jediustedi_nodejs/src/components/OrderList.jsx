@@ -269,6 +269,18 @@ export default function EnhancedTable() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [restaurantName, setRestaurantName] = useState("");
+
+  const getRestaurantName = (restaurant_id) => {
+    console.log("restaurant " + restaurant_id);
+    return axios
+      .get(`http://localhost:5000/partners/${restaurant_id}`)
+      .then((res) => {
+        console.log(res.data);
+        setRestaurantName(res.data);
+        return res.data;
+      });
+  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -371,7 +383,7 @@ export default function EnhancedTable() {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
+                  //getRestaurantName(row.restaurant);
                   return (
                     <TableRow
                       hover

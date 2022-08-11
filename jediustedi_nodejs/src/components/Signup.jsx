@@ -92,10 +92,11 @@ function Signup() {
               value={password}
             />
           </Box>
-
-          <Button variant="contained" type="submit" color="success">
-            Sacuvaj
-          </Button>
+          <Box m={2} pt={3}>
+            <Button variant="contained" type="submit" color="success">
+              Sacuvaj
+            </Button>
+          </Box>
         </form>
         <div>{registrationInfo}</div>
       </Paper>

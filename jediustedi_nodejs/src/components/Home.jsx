@@ -12,7 +12,7 @@ import axios from "axios";
 
 function Home() {
   const [restaurants, setRestaurants] = useState([]);
-
+  //ucitavanje restorana koji ce biti prikazani u sekciji partneri
   useEffect(() => {
     axios
       .get("http://localhost:5000/partners")

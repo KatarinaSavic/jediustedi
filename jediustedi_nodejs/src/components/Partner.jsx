@@ -84,7 +84,6 @@ function Partner() {
               type="text"
               onChange={onChangeAddress}
             />
-
             <TextField
               label="Grad"
               color="success"
@@ -110,7 +109,6 @@ function Partner() {
               type="text"
               onChange={onChangePhone}
             />
-
             <TextField
               label="Email"
               color="success"
@@ -127,7 +125,6 @@ function Partner() {
               type="password"
               onChange={onChangePassword}
             />
-
             <TextField
               label="Ponovite lozinku"
               color="success"

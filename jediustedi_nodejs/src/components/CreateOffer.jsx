@@ -8,8 +8,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Stack from "@mui/material/Stack";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-//Ubaciti datepicker
-
 function CreateOffer() {
   const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
 
@@ -22,12 +20,8 @@ function CreateOffer() {
   const [status, setStatus] = useState("active");
   const [dateFrom, setDateFrom] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  /* useEffect(() => {
-    axios
-      .get("http://localhost:5000/users")
-      .then((res) => setUsers(res.data.map((user) => user.name)))
-      .catch((err) => console.log(err));
-  });*/
+  const [msg, setMsg] = useState("");
+
   console.log(dateFrom);
   const onChangeDish = (e) => {
     setDish(e.target.value);
@@ -38,25 +32,25 @@ function CreateOffer() {
   const onChangePrice = (e) => {
     setPrice(e.target.value);
   };
-  /* const onChangeRestaurant = (e) => {
-    setRestaurant(e.target.value);
-  };
-  const onChangeCity = (e) => {
-    setCity(e.target.value);
-  };*/
+
   const onSubmit = (e) => {
     console.log("sacuvaj");
     e.preventDefault();
-    axios.post("http://localhost:5000/offers", {
-      dish,
-      dishImg,
-      price,
-      restaurant,
-      city,
-      status,
-      dateFrom,
-      endDate,
-    });
+    axios
+      .post("http://localhost:5000/offers", {
+        dish,
+        dishImg,
+        price,
+        restaurant,
+        city,
+        status,
+        dateFrom,
+        endDate,
+      })
+      .then((res) => {
+        if (res.status === 200) setMsg("Ponuda uspešno dodata");
+        else setMsg("Došlo je do greške");
+      });
   };
   return type === "partner" ? (
     <Container maxWidth="sm">
@@ -92,7 +86,6 @@ function CreateOffer() {
               value={price}
             />
           </Box>
-
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Stack spacing={3}>
               <Box m={2} pt={3}>
@@ -104,7 +97,6 @@ function CreateOffer() {
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
-
                 <MobileDateTimePicker
                   label="Vazi do"
                   value={endDate}
@@ -116,7 +108,9 @@ function CreateOffer() {
               </Box>
             </Stack>
           </LocalizationProvider>
-
+          <div>
+            <h2>{msg}</h2>
+          </div>
           <Box m={2} pt={3}>
             <Button variant="contained" type="submit" color="success">
               Sacuvaj
@@ -129,7 +123,7 @@ function CreateOffer() {
       </Paper>
     </Container>
   ) : (
-    <div>1234</div>
+    <div>Nemate autorizacije da biste pristupili ovoj stranici</div>
   );
 }
 

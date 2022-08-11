@@ -12,12 +12,13 @@ import EditOffer from "./components/EditOffer";
 import Partner from "./components/Partner";
 import Home from "./components/Home";
 import Offers from "./components/Offers";
-
 import OrderList from "./components/OrderList";
 import PartnerProfile from "./components/PartnerProfile";
 
 function App() {
+  //cuvanje tipa ulogovanog korisnika
   const [type, setType] = useState(window.localStorage.getItem("type"));
+  //cuvanje uglogovanog korisnika
   const [loggedUser, setLoggedUser] = useState(
     JSON.parse(window.localStorage.getItem("loggedUser"))
   );

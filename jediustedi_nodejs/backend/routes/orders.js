@@ -5,12 +5,14 @@ const Offer = require("../models/offer.model");
 const Partner = require("../models/partner.model");
 
 router.get("/", (req, res) => {
+  ////Vraca sve porudžbine iz baze iskljucujuci jedino polje verzija pri prikazu objekta
   Order.find()
     .select("-__v")
     .then((orders) => {
       orders.map((order) =>
         Partner.findById(order.restaurant).then((partner) => {
           console.log(partner);
+          //dovlači naziv partnera na osnovu id-ja restorana
 
           if (partner !== null) {
             console.log(order.restaurant);
@@ -32,6 +34,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
+  //čuvanje podataka iz poziva servisa
   const t_user = req.body.userID;
   const t_offer = req.body.offerID;
   const t_dish = req.body.dish;
@@ -39,11 +42,7 @@ router.post("/", (req, res) => {
   const t_restaurant = req.body.restaurant;
   const t_dateFrom = req.body.dateFrom;
   const t_endDate = req.body.endDate;
-
-  console.log(t_user);
-  console.log(t_offer);
-  //let offerArr = [];
-  //offerArr.push(t_offer);
+  //kreiranje nove ponude
   const order = new Order({
     user: t_user,
     offer: t_offer,
@@ -53,11 +52,7 @@ router.post("/", (req, res) => {
     dateFrom: t_dateFrom,
     endDate: t_endDate,
   });
-
-  //order.offer.append(t_offer);
-  console.log(order);
-
-  console.log(JSON.stringify(order));
+  //cuvanje nove ponude u bazi
   order
     .save()
     .then((order) => {

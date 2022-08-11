@@ -32,13 +32,8 @@ function Offer(props) {
     setOfferID(itemID);
     console.log(offerID);
     makeOrderNovo(itemID, dish, price, restaurant, dateFrom, endDate);
-    // e.preventDefault();
-    // axios.post("http://localhost:5000/orders", {
-    //   userID,
-    //   offerID,
-    // });
+    
   };
-
   return (
     <div class="col-3">
       <Card sx={{ maxWidth: 345 }}>

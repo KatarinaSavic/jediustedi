@@ -29,3 +29,10 @@ mongoose.connection.once("open", () =>
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+
+var userSchema = new mongoose.Schema(
+  { 
+    ime: String,
+    prezime: String,
+    createdOn: Date
+  });
