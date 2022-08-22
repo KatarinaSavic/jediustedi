@@ -1,5 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const cors = require("cors");
+
+//JWT web token
+const jwt = require("jsonwebtoken");
+
+//bcrypt kriptovanje lozinke
+const { hashSync, compareSync } = require("bcrypt");
 
 const User = require("../models/user.model"); //ucitavanje modela za fizicka lica
 const Partner = require("../models/partner.model"); //ucitavanje modela za poslovne partnere
@@ -8,7 +15,7 @@ const Partner = require("../models/partner.model"); //ucitavanje modela za poslo
  * vraca ulogovanog korisnika i njegov tip
  */
 router.get("/:email/:pass", (req, response) => {
-  User.findOne({ email: req.params.email }, (err, res) => {
+  User.findOne({ email: req.params.email }, (err, user) => {
     if (err) {
       response.status(400).send({
         err,
@@ -16,19 +23,36 @@ router.get("/:email/:pass", (req, response) => {
       });
       return;
     }
-    if (res) {
-      if (res.password == req.params.pass) {
-        response.status(200).send({
+    if (user) {
+      if (compareSync(req.params.pass, user.password)) {
+        console.log(err);
+        //JWT token promenila sam res na req, a posle toga res u user
+        const payload = {
+          email: user.email,
+          id: user._id,
+          //userType: "korisnik",
+        };
+        const token = jwt.sign(payload, "Random string", { expiresIn: "1d" });
+        /////////
+        /* response.status(200).send({
           msg: "korisnik",
-          user: res,
+          user: user,
+          token: "Bearer " + token,
+        });*/
+        response.status(200).send({
+          success: true,
+          msg: "korisnik",
+          token: "Bearer " + token,
+          foundUser: user,
         });
       } else {
-        response.status(200).send({
+        response.status(401).send({
           msg: "korisnik pogresan pass",
+          success: false,
         });
       }
     } else {
-      Partner.findOne({ email: req.params.email }, (err, res) => {
+      Partner.findOne({ email: req.params.email }, (err, user) => {
         if (err) {
           response.status(400).send({
             err,
@@ -36,11 +60,22 @@ router.get("/:email/:pass", (req, response) => {
           });
           return;
         }
-        if (res) {
-          if (res.password == req.params.pass) {
+        if (user) {
+          if (compareSync(req.params.pass, user.password)) {
+            //JWT token promenila sam res na req, a posle toga res u user
+            const payload = {
+              email: user.email,
+              id: user._id,
+              //userType: "partner",
+            };
+            const token = jwt.sign(payload, "Random string", {
+              expiresIn: "1d",
+            });
             response.status(200).send({
+              success: true,
               msg: "partner",
-              user: res,
+              token: "Bearer " + token,
+              foundUser: user,
             });
           } else {
             response.status(200).send({

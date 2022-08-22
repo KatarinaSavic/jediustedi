@@ -13,14 +13,13 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 //da li obrisati props?
 
 function EditOffer(props) {
-  
   const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
 
   const [dish, setDish] = useState("");
   const [dishImg, setDishImg] = useState("");
   const [price, setPrice] = useState("");
-  const [restaurant, setRestaurant] = useState(loggedUser._id);
-  const [city, setCity] = useState(loggedUser.city);
+  //const [restaurant, setRestaurant] = useState(loggedUser._id);
+  //const [city, setCity] = useState(loggedUser.city);
   const [offers, setOffers] = useState([]);
   const [status, setStatus] = useState("active");
   const [dateFrom, setDateFrom] = useState(new Date());
@@ -31,7 +30,7 @@ function EditOffer(props) {
 
   let navigate = useNavigate();
 
-  console.log(restaurant);
+  //console.log(restaurant);
   useEffect(() => {
     axios
       .get("http://localhost:5000/offers/" + id)
@@ -39,15 +38,15 @@ function EditOffer(props) {
         setDish(res.data.dish);
         setDishImg(res.data.dishImg);
         setPrice(res.data.price);
-        setRestaurant(res.data.restaurant);
-        setCity(res.data.city);
+        //setRestaurant(res.data.restaurant);
+        //setCity(res.data.city);
         setDateFrom(res.data.dateFrom);
         setEndDate(res.data.endDate);
       })
       .catch((err) => console.log(err));
   }, []);
 
-   const onChangeDish = (e) => {
+  const onChangeDish = (e) => {
     setDish(e.target.value);
   };
   const onChangeDishImg = (e) => {
@@ -64,8 +63,8 @@ function EditOffer(props) {
         dish: dish,
         dishImg: dishImg,
         price: price,
-        restaurant: restaurant,
-        city: city,
+        //restaurant: restaurant,
+        //city: city,
         status: status,
         dateFrom: dateFrom,
         endDate: endDate,

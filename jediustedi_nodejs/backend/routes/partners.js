@@ -1,6 +1,9 @@
 const express = require("express"); //ucitavanje biblioteke express
 const router = express.Router(); //ucitavanje biblioteke router
 const Partner = require("../models/partner.model"); //ucitavanje modela za poslovne partnere
+//bcrypt kriptovanje lozinke
+const { hashSync } = require("bcrypt");
+
 router.post("/", (req, res) => {
   //čuvanje podataka iz poziva servisa
   const t_name = req.body.name;
@@ -10,7 +13,7 @@ router.post("/", (req, res) => {
   const t_working_hours = req.body.working_hours;
   const t_phone = req.body.phone;
   const t_email = req.body.email;
-  const t_password = req.body.password;
+  const t_password = hashSync(req.body.password, 10);
   //kreiranje novog korisnika
   const partner = new Partner({
     name: t_name,

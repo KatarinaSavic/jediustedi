@@ -29,6 +29,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
+//Konverzija datuma pomocu biblioteke moment
+import Moment from "moment";
+//import "moment/locale/sr-latn";
+import "moment/min/moment-with-locales";
+import "moment/locale/sr";
+
 function createData(id, dish, dishImg, price) {
   return {
     id,
@@ -104,6 +110,12 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: "Vazi do",
+  },
+  {
+    id: "status",
+    numeric: false,
+    disablePadding: false,
+    label: "Status",
   },
 ];
 
@@ -239,19 +251,25 @@ EnhancedTableToolbar.propTypes = {
 export default function EnhancedTable() {
   //Ulogovani korisnik
   const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
+  const token = localStorage.getItem("token");
 
   //Ucitavanje iz baze
   const [rows, setRows] = useState([]);
-  const [dataChange, setChange] = useState(0);
+  let [dataChange, setChange] = useState(0);
   useEffect(() => {
     axios
-      .get("http://localhost:5000/offers")
-      .then((res) =>
-        setRows(
+      .get("http://localhost:5000/offers/personal", {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then(
+        (res) => setRows(res.data)
+        /*  setRows(
           res.data.filter((offer) => {
             return offer.restaurant === loggedUser._id;
           })
-        )
+        )*/
       )
       .catch((err) => console.log(err));
   }, [dataChange]);
@@ -323,19 +341,42 @@ export default function EnhancedTable() {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+  //funkcija koja vraca status selektovanog reda
+  function rowStatus() {
+    //console.log(selected);
+    //console.log(rows);
+    const selektovani = rows.filter((offer) => {
+      return offer._id === selected[0];
+    });
+    //console.log(selektovani);
+    return selektovani[0].status;
+  }
+
   //Brisanje
   const onDeleteOffer = () => {
-    console.log("usao u brisanje" + selected[0]);
-    console.log(typeof selected[0]);
-    axios
-      .delete(`http://localhost:5000/offers/${selected}`)
-      .then((res) => setChange(++dataChange))
-      .catch((err) => console.log(err));
+    const selectedStatus = rowStatus();
+    //console.log("usao u brisanje" + selected[0]);
+    //console.log(typeof selected[0]);
+
+    let idDel = selected[0];
+
+    if (selectedStatus !== "sold") {
+      axios
+        .delete(`http://localhost:5000/offers/${idDel}`)
+        .then((res) => {
+          setChange(++dataChange);
+          window.alert("Ponuda je obrisana");
+        })
+        .catch((err) => console.log(err));
+    } else window.alert("Ponuda je rezervisana i ne moze biti izmenjena");
   };
   let navigate = useNavigate();
   //Izmena
   const onEditOffer = () => {
-    navigate(`/edit/${selected}`);
+    const selectedStatus = rowStatus();
+
+    if (selectedStatus !== "sold") navigate(`/edit/${selected}`);
+    else window.alert("Ponuda je rezervisana i ne moze biti izmenjena");
     // console.log(`/edit/${selected}`);
   };
 
@@ -400,9 +441,15 @@ export default function EnhancedTable() {
 
                       <TableCell align="left">{row.dish}</TableCell>
                       <TableCell align="left">{row.dishImg}</TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
-                      <TableCell align="right">{row.dateFrom}</TableCell>
-                      <TableCell align="right">{row.endDate}</TableCell>
+                      <TableCell align="right">{row.price}RSD</TableCell>
+                      <TableCell align="left">
+                        {" "}
+                        {Moment(row.dateFrom).locale("sr").format("LLLL")}
+                      </TableCell>
+                      <TableCell align="left">
+                        {Moment(row.endDate).locale("sr").format("LLLL")}
+                      </TableCell>
+                      <TableCell align="right">{row.status}</TableCell>
                     </TableRow>
                   );
                 })}

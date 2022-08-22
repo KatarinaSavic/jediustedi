@@ -1,6 +1,13 @@
 const router = require("express").Router();
 
 const Offer = require("../models/offer.model");
+const Partner = require("../models/partner.model");
+
+//JWT i passport
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
+const { default: mongoose } = require("mongoose");
+require("../passport");
 
 router.get("/", (req, res) => {
   //Vraca sve ponude iz baze iskljucujuci jedino polje verzija pri prikazu objekta
@@ -10,39 +17,90 @@ router.get("/", (req, res) => {
     .catch((err) => res.status(400).send(err));
 });
 
-router.post("/", (req, res) => {
-  //čuvanje podataka iz poziva servisa
-  const t_dish = req.body.dish;
-  const t_dishImg = req.body.dishImg;
-  const t_price = req.body.price;
-  const t_restaurant = req.body.restaurant;
-  const t_city = req.body.city;
-  const t_status = req.body.status;
-  const t_dateFrom = req.body.dateFrom;
-  const t_endDate = req.body.endDate;
-  //kreiranje nove ponude
-  const offer = new Offer({
-    dish: t_dish,
-    dishImg: t_dishImg,
-    price: t_price,
-    restaurant: t_restaurant,
-    city: t_city,
-    status: t_status,
-    dateFrom: t_dateFrom,
-    endDate: t_endDate,
-  });
-  console.log(JSON.stringify(offer));
-  //cuvanje ponude u bazi
-  offer
-    .save()
-    .then((offer) => {
-      res.status(200).send(offer);
+router.get("/active", (req, res) => {
+  Offer.aggregate([
+    {
+      $match: {
+        status: "active",
+      },
+    },
+    {
+      $lookup: {
+        from: Partner.collection.name,
+        localField: "restaurant",
+        foreignField: "_id",
+        as: "restaurant_details",
+      },
+    },
+  ])
+    .then((porucio) => {
+      //console.log("vraca po user-u " + JSON.stringify(porucio));
+      //console.log("/nrestoran " + JSON.stringify(porucio));
+      res.status(200).send(porucio);
     })
-    .catch((err) => {
-      console.log(JSON.stringify(err));
-      res.status(400).send(err);
-    });
+    .catch((err) => res.status(400).send(err));
 });
+
+router.get(
+  "/personal",
+  passport.authenticate("partner", { session: false }),
+  (req, res) => {
+    partnerID = mongoose.Types.ObjectId(req.user._id);
+    Offer.aggregate([
+      {
+        $match: {
+          restaurant: partnerID,
+        },
+      },
+    ])
+      .then((personalOffers) => {
+        //console.log("vraca po user-u " + JSON.stringify(porucio));
+        //console.log("/nrestoran " + JSON.stringify(porucio));
+        res.status(200).send(personalOffers);
+      })
+      .catch((err) => res.status(400).send(err));
+  }
+);
+
+router.post(
+  "/",
+  passport.authenticate("partner", { session: false }),
+  (req, res) => {
+    console.log("pronasao sam korisnika" + req.user);
+    //čuvanje podataka iz poziva servisa
+    const t_dish = req.body.dish;
+    const t_dishImg = req.body.dishImg;
+    const t_price = req.body.price;
+    const t_restaurant = req.user._id;
+    //const t_city = req.user.city;
+    const t_city = "Beograd";
+    const t_status = req.body.status;
+    const t_dateFrom = req.body.dateFrom;
+    const t_endDate = req.body.endDate;
+    //kreiranje nove ponude
+    const offer = new Offer({
+      dish: t_dish,
+      dishImg: t_dishImg,
+      price: t_price,
+      restaurant: t_restaurant,
+      city: t_city,
+      status: t_status,
+      dateFrom: t_dateFrom,
+      endDate: t_endDate,
+    });
+    console.log(JSON.stringify(offer));
+    //cuvanje ponude u bazi
+    offer
+      .save()
+      .then((offer) => {
+        res.status(200).send(offer);
+      })
+      .catch((err) => {
+        console.log(JSON.stringify(err));
+        res.status(400).send(err);
+      });
+  }
+);
 
 router.get("/:id", (req, res) => {
   Offer.findById(req.params.id)

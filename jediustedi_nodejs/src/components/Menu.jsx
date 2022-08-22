@@ -55,6 +55,7 @@ function Menu() {
               setType(null);
               setLoggedUser(null);
               window.localStorage.removeItem("type");
+              localStorage.removeItem("token");
             }}
           >
             Odjavi se

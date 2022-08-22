@@ -3,13 +3,23 @@ import axios from "axios";
 import bcrypt from "bcryptjs";
 import { Paper, Container, TextField, Box, Button } from "@mui/material";
 
+//PAssword
+
+import IconButton from "@mui/material/IconButton";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import FormControl from "@mui/material/FormControl";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
 function Signup() {
   //const salt = bcrypt.genSaltSync(10)
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [type, setType] = useState("");
+  //const [type, setType] = useState("");
   const [registrationInfo, setRegistrationInfo] = useState();
 
   const onChangeName = (e) => {
@@ -17,11 +27,38 @@ function Signup() {
   };
   const onChangeEmail = (e) => {
     setEmail(e.target.value);
+    //setType("buyer");
   };
   const onChangePassword = (e) => {
     setPassword(e.target.value);
-    setType("buyer");
+    //setType("buyer");
   };
+
+  //password functions
+  const [values, setValues] = React.useState({
+    amount: "",
+    password: "",
+    weight: "",
+    weightRange: "",
+    showPassword: false,
+  });
+
+  const handleChange = (prop) => (event) => {
+    setValues({ ...values, [prop]: event.target.value });
+    setPassword(event.target.value);
+  };
+
+  const handleClickShowPassword = () => {
+    setValues({
+      ...values,
+      showPassword: !values.showPassword,
+    });
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+  ///end of password funcs
 
   /*function hashIt(password){
     const salt = bcrypt.genSaltSync(10);
@@ -57,7 +94,7 @@ function Signup() {
     });
     return;*/
     axios
-      .post("http://localhost:5000/users", { name, email, password, type })
+      .post("http://localhost:5000/users", { name, email, password })
       .then((res) => {
         setRegistrationInfo(res.data.infoText);
       });
@@ -80,17 +117,42 @@ function Signup() {
             <TextField
               label="Email"
               color="success"
+              focused
               onChange={onChangeEmail}
               value={email}
             />
           </Box>
           <Box m={2} pt={3}>
-            <TextField
-              label="Lozinka"
+            <FormControl
+              sx={{ m: 0, width: "25ch" }}
+              variant="outlined"
               color="success"
-              onChange={onChangePassword}
-              value={password}
-            />
+              focused
+            >
+              <InputLabel htmlFor="outlined-adornment-password">
+                Lozinka
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={values.showPassword ? "text" : "password"}
+                value={values.password}
+                onChange={handleChange("password")}
+                //onChange={onChangePassword}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
           </Box>
           <Box m={2} pt={3}>
             <Button variant="contained" type="submit" color="success">

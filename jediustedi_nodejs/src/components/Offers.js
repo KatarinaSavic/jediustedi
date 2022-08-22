@@ -2,24 +2,27 @@ import axios from "axios";
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import Offer from "./Offer";
+import { useNavigate } from "react-router-dom";
 
 //TO DO
 //Srediti izgled
 //Dodati slike u bazu i ukoliko je nema staviti default sliku restorana
 
 function Offers(props) {
-  const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
+  // const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
   const [city, setCity] = useState("");
   const [clicked, setClicked] = useState(0);
   const [currentoffers, setCurrentOffers] = useState([]);
   const [cards, setCards] = useState([]);
   const [userID, setUserID] = useState(null);
   const [restaurantName, setRestaurantName] = useState("");
+
+  const navigate = useNavigate();
   //ucitavanje svih aktivnih ponuda iz baze
   useEffect(() => {
-    if (loggedUser !== null) setUserID(loggedUser._id);
+    //  if (loggedUser !== null) setUserID(loggedUser._id);
     console.log("useEffect once");
-    axios
+    /* axios
       .get("http://localhost:5000/offers")
       .then((res) => {
         setCurrentOffers(
@@ -32,6 +35,16 @@ function Offers(props) {
             return o.status === "active";
           })
         );
+      })
+      .catch((err) => console.log(err));*/
+    axios
+      .get("http://localhost:5000/offers/active")
+      .then((res) => {
+        setCurrentOffers(res.data);
+        setCards(res.data);
+        console.log(res.data);
+        console.log("cur off" + JSON.stringify(currentoffers));
+        console.log("card" + JSON.stringify(cards));
       })
       .catch((err) => console.log(err));
   }, []);
@@ -70,9 +83,55 @@ function Offers(props) {
     });*/
   }, [clicked]);
 
+  const token = localStorage.getItem("token");
+
+  // console.log("Iz offersa saljem tokne" + token);
+
   const makeOrderNovo = (id, dish, price, restaurant, dateFrom, endDate) => {
     //console.log("idOffera: " + id);
-    axios.post("http://localhost:5000/orders", {
+    axios
+      .post(
+        "http://localhost:5000/orders",
+        {
+          //userID,
+          offerID: id,
+          dish,
+          price,
+          restaurant,
+          dateFrom,
+          endDate,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      )
+      .then((res) => {
+        console.log("Res" + res);
+        // if (res.isAuthenticated()) {
+
+        axios.put(`http://localhost:5000/offers/${id}`, {
+          status: "sold",
+        });
+        //obrada greske + poruka
+        setCurrentOffers(
+          currentoffers.filter((o) => {
+            return o._id !== id;
+          })
+        );
+        setClicked((x) => x + 1);
+        window.alert(
+          "Rezervisali ste ponudu! Svoje porudzbine mozete je na stranici Moje porudzbine."
+        );
+      })
+      .catch((err) => {
+        navigate("../login");
+      });
+  };
+
+  /*
+     axios.post("http://localhost:5000/orders", {
       userID,
       offerID: id,
       dish,
@@ -81,7 +140,8 @@ function Offers(props) {
       dateFrom,
       endDate,
     });
-    axios.put(`http://localhost:5000/offers/${id}`, {
+    */
+  /*axios.put(`http://localhost:5000/offers/${id}`, {
       status: "sold",
     });
     //obrada greske + poruka
@@ -91,7 +151,7 @@ function Offers(props) {
       })
     );
     setClicked((x) => x + 1);
-  };
+  };*/
 
   /*const getRestaurantName = (restaurant_id) => {
     return axios
@@ -102,7 +162,7 @@ function Offers(props) {
       });
   };*/
 
-  const getRestaurantName = (restaurant_id) => {
+  /*const getRestaurantName = (restaurant_id) => {
     console.log("restaurant " + restaurant_id);
     return axios
       .get(`http://localhost:5000/partners/${restaurant_id}`)
@@ -111,11 +171,13 @@ function Offers(props) {
         setRestaurantName(res.data);
         return res.data;
       });
-  };
+  };*/
+
+  //<h3>Unesite grad u kome se nalazite {type}</h3>
   return (
     <div class="containter-offers">
       <div class="city-selection">
-        <h3>Unesite grad u kome se nalazite {type}</h3>
+        <h3>Unesite grad u kome se nalazite </h3>
         <input
           onChange={takeCity}
           type="text"
@@ -125,9 +187,9 @@ function Offers(props) {
       </div>
       <div class="row">
         {cards.map((item) => {
-          console.log("itemid" + item.restaurant);
+          console.log("itemid" + JSON.stringify(item.restaurant_details[0]));
 
-          getRestaurantName(item.restaurant);
+          //getRestaurantName(item.restaurant);
           return (
             <Offer
               key={item._id}
@@ -135,11 +197,12 @@ function Offers(props) {
               dish={item.dish}
               dishImg={item.dishImg}
               price={item.price}
-              restaurant={restaurantName}
+              restaurant={item.restaurant_details[0].name}
               city={item.city}
               dateFrom={item.dateFrom}
               endDate={item.endDate}
               makeOrderNovo={makeOrderNovo}
+              restaurantID={item.restaurant}
             />
           );
         })}

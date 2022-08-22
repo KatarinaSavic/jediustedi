@@ -29,6 +29,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
+//Konverzija datuma pomocu biblioteke moment
+import Moment from "moment";
+//import "moment/locale/sr-latn";
+import "moment/min/moment-with-locales";
+import "moment/locale/sr";
+
 function createData(id, dish, dishImg, price) {
   return {
     id,
@@ -243,16 +249,61 @@ export default function EnhancedTable() {
   //Ucitavanje iz baze
   const [rows, setRows] = useState([]);
   const [dataChange, setChange] = useState(0);
+
+  /*Axios.get("http://localhost:1337/api/get", {
+    params: { teacherId }
+  });*/
+
+  var token = localStorage.getItem("token");
+  console.log("Saljem token" + token);
   useEffect(() => {
     axios
-      .get("http://localhost:5000/orders")
-      .then((res) => {
-        setRows(res.data);
-        console.log("1" + res.data);
+      .get("http://localhost:5000/orders", {
+        headers: {
+          Authorization: token,
+        },
       })
+      .then((podaci) => {
+        setRows(podaci.data);
+        console.log(podaci.data);
+      })
+
+      /* axios
+      .get(
+        "http://localhost:5000/orders",
+        {
+          headers: {
+            //Authorization: "Bearer " + token,
+            Authorization: token,
+          },
+        },
+        (req, res) => {
+          console.log(req);
+          console.log(res);
+          setRows(req.data);
+          setChange(++dataChange);
+          console.log(req.data);
+          if (req.isAuthenticated()) {
+            console.log(res.data);
+            setRows(res.data);
+            //console.log("1" + res.data);
+          } else {
+            console.log(res.data);
+            setRows(res.data);
+          }
+        }
+      )*/
+
+      /*.then((res) => {
+        if (res.isAuthenticated()) {
+          setRows(res.data);
+          console.log("1" + res.data);
+        }
+      })*/
       .catch((err) => console.log(err));
   }, [dataChange]);
-  console.log("rows" + rows);
+  console.log("rows" + JSON.stringify(rows));
+
   //'https://httpbin.org/get?answer=42'
   /*get("http://localhost:5000/userOrders", {
     params: { restaurant: loggedUser._id },
@@ -271,7 +322,7 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [restaurantName, setRestaurantName] = useState("");
 
-  const getRestaurantName = (restaurant_id) => {
+  /*const getRestaurantName = (restaurant_id) => {
     console.log("restaurant " + restaurant_id);
     return axios
       .get(`http://localhost:5000/partners/${restaurant_id}`)
@@ -280,7 +331,7 @@ export default function EnhancedTable() {
         setRestaurantName(res.data);
         return res.data;
       });
-  };
+  };*/
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -413,10 +464,14 @@ export default function EnhancedTable() {
                       </TableCell>
 
                       <TableCell align="left">{row.dish}</TableCell>
-                      <TableCell align="left">{row.restaurant}</TableCell>
-                      <TableCell align="right">{row.price}</TableCell>
-                      <TableCell align="right">{row.dateFrom}</TableCell>
-                      <TableCell align="right">{row.endDate}</TableCell>
+                      <TableCell align="left">{row.restoran[0].name}</TableCell>
+                      <TableCell align="right">{row.price}RSD</TableCell>
+                      <TableCell align="left">
+                        {Moment(row.dateFrom).locale("sr").format("LLLL")}
+                      </TableCell>
+                      <TableCell align="left">
+                        {Moment(row.endDate).locale("sr").format("LLLL")}
+                      </TableCell>
                     </TableRow>
                   );
                 })}

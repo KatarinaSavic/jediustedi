@@ -1,19 +1,21 @@
 const express = require("express"); //ucitavanje biblioteke express
 const router = express.Router(); //ucitavanje biblioteke router
 const User = require("../models/user.model"); //ucitavanje modela za fizicka lica
+//bcrypt kriptovanje lozinke
+const { hashSync } = require("bcrypt");
 
 router.post("/", (req, res) => {
   //čuvanje podataka iz poziva servisa
   const t_name = req.body.name;
   const t_email = req.body.email;
-  const t_password = req.body.password;
-  const t_type = req.body.type;
+  const t_password = hashSync(req.body.password, 10);
+  //const t_type = req.body.type;
   //kreiranje novog korisnika
   const user = new User({
     name: t_name,
     email: t_email,
     password: t_password,
-    type: t_type,
+    //type: t_type,
   });
   //Provera da li korisnik već postoji na osnovu email-a koji mora biti jedinstven
   User.findOne({ email: user.email }, (err, result) => {

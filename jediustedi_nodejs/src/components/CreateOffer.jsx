@@ -7,6 +7,7 @@ import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Stack from "@mui/material/Stack";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useNavigate } from "react-router-dom";
 
 function CreateOffer() {
   const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
@@ -15,14 +16,19 @@ function CreateOffer() {
   const [dish, setDish] = useState("");
   const [dishImg, setDishImg] = useState("");
   const [price, setPrice] = useState("");
-  const [restaurant, setRestaurant] = useState(loggedUser._id);
-  const [city, setCity] = useState(loggedUser.city);
+  //const [restaurant, setRestaurant] = useState(loggedUser._id);
+  //const [city, setCity] = useState(loggedUser.city);
   const [status, setStatus] = useState("active");
   const [dateFrom, setDateFrom] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [msg, setMsg] = useState("");
 
-  console.log(dateFrom);
+  //token
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  console.log("token koji saljem je" + token);
+
+  //console.log(dateFrom);
   const onChangeDish = (e) => {
     setDish(e.target.value);
   };
@@ -37,25 +43,39 @@ function CreateOffer() {
     console.log("sacuvaj");
     e.preventDefault();
     axios
-      .post("http://localhost:5000/offers", {
-        dish,
-        dishImg,
-        price,
-        restaurant,
-        city,
-        status,
-        dateFrom,
-        endDate,
-      })
+      .post(
+        "http://localhost:5000/offers",
+
+        {
+          dish,
+          dishImg,
+          price,
+          //restaurant,
+          //city,
+          status,
+          dateFrom,
+          endDate,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) setMsg("Ponuda uspešno dodata");
         else setMsg("Došlo je do greške");
+      })
+      .catch((err) => {
+        console.log(JSON.stringify(err));
+        navigate("../login");
       });
   };
+  // <h3>Dodajte danasnju {loggedUser.name} ponudu </h3> mozes uz token ime da vratis
   return type === "partner" ? (
     <Container maxWidth="sm">
       <Paper elevation={3}>
-        <h3>Dodajte danasnju {loggedUser.name} ponudu </h3>
+        <h3>Dodajte danasnju ponudu </h3>
         <form onSubmit={onSubmit}>
           <Box m={2} pt={3}>
             {" "}
