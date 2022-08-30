@@ -76,15 +76,21 @@ function Partner() {
     e.preventDefault();
     //validateMail(email);
     axios
-      .post("http://localhost:5000/partners", {
-        name,
-        address,
-        city,
-        working_hours,
-        phone,
-        email,
-        password,
-      })
+      .post(
+        "http://localhost:5000/partners",
+        {
+          name,
+          address,
+          city,
+          working_hours,
+          phone,
+          email,
+          password,
+        },
+        {
+          mode: "cors",
+        }
+      )
       .then((res) => {
         setRegistrationInfo(res.data.infoText);
       });

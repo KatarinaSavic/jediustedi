@@ -5,6 +5,14 @@ const User = require("../models/user.model"); //ucitavanje modela za fizicka lic
 const { hashSync } = require("bcrypt");
 
 router.post("/", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+
+  var csrf_token = document
+    .querySelector("meta[name='csrf-token']")
+    .getAttribute("content");
+
+  axios.defaults.headers.post["anti-csrf-token"] = csrf_token;
+
   //čuvanje podataka iz poziva servisa
   const t_name = req.body.name;
   const t_email = req.body.email;
@@ -40,6 +48,7 @@ router.post("/", (req, res) => {
 });
 
 router.get("/:email/:pass", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   User.findOne({ email: req.params.email }, (err, res) => {
     if (err) {
       //doslo je do neke greske

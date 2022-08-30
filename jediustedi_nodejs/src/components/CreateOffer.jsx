@@ -22,6 +22,7 @@ function CreateOffer() {
   const [dateFrom, setDateFrom] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [msg, setMsg] = useState("");
+  const [csrfToken, setToken] = useState("");
 
   //token
   const token = localStorage.getItem("token");
@@ -39,13 +40,43 @@ function CreateOffer() {
     setPrice(e.target.value);
   };
 
+  //console.log("token u reactu " + response.data.CSRFToken);
+  //axios.defaults.headers.post["X-CSRF-Token"] = response.data.CSRFToken;
+
+  /*const getCSRFToken = async () => {
+    const response = await axios.get("http://localhost:5000/getCSRFToken");
+    axios.defaults.headers.post["X-CSRF-Token"] = response.data.CSRFToken;
+    //axios.defaults.headers.common["X-CSRF-Token"] = response.data.CSRFToken;
+    //axios.defaults.headers.trace = {};
+    //axios.defaults.headers.trace["anti-csrf-token"] = response.data.CSRFToken;
+  };
+
+  useEffect(() => {
+    /*axios
+      .get("http://localhost:5000/getCSRFToken", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((res) => {
+        axios.defaults.headers.post["X-CSRF-Token"] = res.data.CSRFToken;
+        //axios.defaults.headers.common["x-csrf-token"] = res.data.csrfToken;
+        axios.defaults.withCredentials = true;
+        setToken(res.data.CSRFToken);
+      });*/
+  // getCSRFToken();
+  //}, []);*/
+
   const onSubmit = (e) => {
     console.log("sacuvaj");
     e.preventDefault();
+
+    //getCSRFToken();*/
     axios
       .post(
         "http://localhost:5000/offers",
-
         {
           dish,
           dishImg,
@@ -56,13 +87,22 @@ function CreateOffer() {
           dateFrom,
           endDate,
         },
+        //{
+        //withCredentials: true,
+        //xsrfHeaderName: "X-CSRF-Token",
+        // },
         {
           headers: {
             Authorization: token,
           },
+        },
+        {
+          mode: "cors",
         }
       )
       .then((res) => {
+        //console.log(res.headers);
+
         if (res.status === 200) setMsg("Ponuda uspešno dodata");
         else setMsg("Došlo je do greške");
       })

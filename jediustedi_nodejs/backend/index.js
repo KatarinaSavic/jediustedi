@@ -11,13 +11,30 @@ const orders = require("./routes/orders");
 //JWT
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+//const csrf = require("csurf");
+//const cookieParser = require("cookie-parser");
+//const bodyParser = require("body.parser");
 require("./passport");
 
 //bcrypt kriptovanje lozinke
 const { hashSync } = require("bcrypt");
+const { NestCamWiredStand } = require("@mui/icons-material");
+//antiCSFR token
 
+////const csrfProtection = csrf({ cookie: true });
+
+/*const corsOptions = {
+  origin: "http://localhost:3000",
+ credentials: true, //access-control-allow-credentials:true
+};
+
+app.use(cors(corsOptions));*/
 app.use(cors());
 app.use(express.json());
+
+//app.use(cookieParser());
+//app.use(csrfProtection);
+//app.use(cookieParser());
 
 //dodala sam jer ne radi
 app.use(passport.initialize());
@@ -27,6 +44,17 @@ app.use("/offers", offers);
 app.use("/partners", partners);
 app.use("/login", login);
 app.use("/orders", orders);
+
+/*app.get("/getCSRFToken", (req, res) => {
+  console.log("get token na beku" + req.csrfToken());
+  //res.cookie("XSRF-TOKEN", req.csrfToken());
+  res.json({ CSRFToken: req.csrfToken() });
+});*/
+
+/*app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});*/
 
 /*Primeni na druge JWT
 app.get(
@@ -54,8 +82,8 @@ mongoose.connection.once("open", () =>
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
-var userSchema = new mongoose.Schema({
+/*var userSchema = new mongoose.Schema({
   ime: String,
   prezime: String,
   createdOn: Date,
-});
+});*/

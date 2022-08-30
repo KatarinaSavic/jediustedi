@@ -57,6 +57,8 @@ function Login() {
     });
   };
 
+  const [crsfToken, setCrsfToken] = useState("");
+
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -77,8 +79,13 @@ function Login() {
 
   const logIn = (e) => {
     axios
-      .get("http://localhost:5000/login/" + email + "/" + password)
+      .get("http://localhost:5000/login/" + email + "/" + password, {
+        mode: "cors",
+      })
       .then((res) => {
+        //CSRF token
+        //axios.defaults.headers.post["X-CSRF-Token"] = res.data.CSRFToken;
+
         window.localStorage.setItem("type", res.data.msg);
         /*window.localStorage.setItem(
           "loggedUser",

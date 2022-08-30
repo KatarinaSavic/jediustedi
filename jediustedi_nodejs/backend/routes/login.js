@@ -15,6 +15,8 @@ const Partner = require("../models/partner.model"); //ucitavanje modela za poslo
  * vraca ulogovanog korisnika i njegov tip
  */
 router.get("/:email/:pass", (req, response) => {
+  response.set("Access-Control-Allow-Origin", "http://localhost:3000");
+  //const csrfToken = req.csrfToken();
   User.findOne({ email: req.params.email }, (err, user) => {
     if (err) {
       response.status(400).send({
@@ -44,6 +46,7 @@ router.get("/:email/:pass", (req, response) => {
           msg: "korisnik",
           token: "Bearer " + token,
           foundUser: user,
+          //csrf: csrfToken,
         });
       } else {
         response.status(401).send({
@@ -71,6 +74,16 @@ router.get("/:email/:pass", (req, response) => {
             const token = jwt.sign(payload, "Random string", {
               expiresIn: "1d",
             });
+
+            //const cookie = "user=hussein; samesite=lax; secure";
+            //const cookie = "user=hussein; samesite=none; secure";
+            //const cookie = "user=hussein;";
+
+            //res.setHeader("set-cookie", [cookie])
+            //res.cookie("api token "
+
+            //)
+            // res.send("ok");
             response.status(200).send({
               success: true,
               msg: "partner",
@@ -88,6 +101,7 @@ router.get("/:email/:pass", (req, response) => {
           });
         }
       });
+      console.log("cors" + response);
       // ne postoji user sa prosledjenim mailom
     }
   });

@@ -38,7 +38,9 @@ function Offers(props) {
       })
       .catch((err) => console.log(err));*/
     axios
-      .get("http://localhost:5000/offers/active")
+      .get("http://localhost:5000/offers/active", {
+        mode: "cors",
+      })
       .then((res) => {
         setCurrentOffers(res.data);
         setCards(res.data);
@@ -105,15 +107,24 @@ function Offers(props) {
           headers: {
             Authorization: token,
           },
+        },
+        {
+          mode: "cors",
         }
       )
       .then((res) => {
         console.log("Res" + res);
         // if (res.isAuthenticated()) {
 
-        axios.put(`http://localhost:5000/offers/${id}`, {
-          status: "sold",
-        });
+        axios.put(
+          `http://localhost:5000/offers/${id}`,
+          {
+            status: "sold",
+          },
+          {
+            mode: "cors",
+          }
+        );
         //obrada greske + poruka
         setCurrentOffers(
           currentoffers.filter((o) => {

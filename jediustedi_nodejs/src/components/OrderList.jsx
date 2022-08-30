@@ -258,11 +258,17 @@ export default function EnhancedTable() {
   console.log("Saljem token" + token);
   useEffect(() => {
     axios
-      .get("http://localhost:5000/orders", {
-        headers: {
-          Authorization: token,
+      .get(
+        "http://localhost:5000/orders",
+        {
+          headers: {
+            Authorization: token,
+          },
         },
-      })
+        {
+          mode: "cors",
+        }
+      )
       .then((podaci) => {
         setRows(podaci.data);
         console.log(podaci.data);
@@ -393,7 +399,9 @@ export default function EnhancedTable() {
     console.log("usao u brisanje" + selected[0]);
     console.log(typeof selected[0]);
     axios
-      .delete(`http://localhost:5000/orders/${selected}`)
+      .delete(`http://localhost:5000/orders/${selected}`, {
+        mode: "cors",
+      })
       .then((res) => setChange(++dataChange))
       .catch((err) => console.log(err));
   };

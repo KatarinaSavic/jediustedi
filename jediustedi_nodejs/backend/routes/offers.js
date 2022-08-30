@@ -10,6 +10,7 @@ const { default: mongoose } = require("mongoose");
 require("../passport");
 
 router.get("/", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   //Vraca sve ponude iz baze iskljucujuci jedino polje verzija pri prikazu objekta
   Offer.find()
     .select("-__v")
@@ -18,6 +19,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/active", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   Offer.aggregate([
     {
       $match: {
@@ -45,6 +47,7 @@ router.get(
   "/personal",
   passport.authenticate("partner", { session: false }),
   (req, res) => {
+    res.set("Access-Control-Allow-Origin", "http://localhost:3000");
     partnerID = mongoose.Types.ObjectId(req.user._id);
     Offer.aggregate([
       {
@@ -66,6 +69,16 @@ router.post(
   "/",
   passport.authenticate("partner", { session: false }),
   (req, res) => {
+    //res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    //const cookie = req.headers.cookie;
+    // if (cookie) {
+    //res.set("Access-Control-Allow-Headers", "X-CSRF-Token");
+    //res.set("X-CSRF-Token", req.csrfToken());
+    //res.cookie("X-XSRF-TOKEN", req.csrfToken());
+
+    //axios.defaults.headers.post["X-CSRF-Token"] = axios.get("/getCSRFToken");
+    //Axios.defaults.headers.common["X-CSRF-TOKEN"] = //req.csrfToken();
     console.log("pronasao sam korisnika" + req.user);
     //čuvanje podataka iz poziva servisa
     const t_dish = req.body.dish;
@@ -99,10 +112,15 @@ router.post(
         console.log(JSON.stringify(err));
         res.status(400).send(err);
       });
+    // } else {
+    // res.sendStatus(403);
+    // res.end();
+    // }
   }
 );
 
 router.get("/:id", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   Offer.findById(req.params.id)
     .then((o) => {
       if (o != null) res.status(200).send(o);
@@ -115,6 +133,7 @@ router.get("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   //pronalazi ponudu na osnovu prosledjenog ID-ja i brise je iz baze
   Offer.findByIdAndDelete(req.params.id)
     .then((o) => {
@@ -125,6 +144,7 @@ router.delete("/:id", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   //pronalazi ponudu na osnovu prosledjenog ID-ja i azurira polja sa novim vrednostima
   Offer.findByIdAndUpdate(req.params.id, req.body)
     .then((o) => {

@@ -15,7 +15,9 @@ function Home() {
   //ucitavanje restorana koji ce biti prikazani u sekciji partneri
   useEffect(() => {
     axios
-      .get("http://localhost:5000/partners")
+      .get("http://localhost:5000/partners", {
+        mode: "cors",
+      })
       .then((res) => {
         setRestaurants(res.data);
         console.log(res.data);

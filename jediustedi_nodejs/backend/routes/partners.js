@@ -5,6 +5,7 @@ const Partner = require("../models/partner.model"); //ucitavanje modela za poslo
 const { hashSync } = require("bcrypt");
 
 router.post("/", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   //čuvanje podataka iz poziva servisa
   const t_name = req.body.name;
   //const t_logo = req.body.logo;
@@ -56,6 +57,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   Partner.findById(req.params.id)
     .then((p) => {
       if (p != null) res.status(200).send(p.name);

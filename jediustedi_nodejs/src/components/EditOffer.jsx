@@ -33,7 +33,9 @@ function EditOffer(props) {
   //console.log(restaurant);
   useEffect(() => {
     axios
-      .get("http://localhost:5000/offers/" + id)
+      .get("http://localhost:5000/offers/" + id, {
+        mode: "cors",
+      })
       .then((res) => {
         setDish(res.data.dish);
         setDishImg(res.data.dishImg);
@@ -59,16 +61,22 @@ function EditOffer(props) {
   const onSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:5000/offers/${id}`, {
-        dish: dish,
-        dishImg: dishImg,
-        price: price,
-        //restaurant: restaurant,
-        //city: city,
-        status: status,
-        dateFrom: dateFrom,
-        endDate: endDate,
-      })
+      .put(
+        `http://localhost:5000/offers/${id}`,
+        {
+          dish: dish,
+          dishImg: dishImg,
+          price: price,
+          //restaurant: restaurant,
+          //city: city,
+          status: status,
+          dateFrom: dateFrom,
+          endDate: endDate,
+        },
+        {
+          mode: "cors",
+        }
+      )
       .then((res) => {
         if (res.status === 200) setMsg("Ponuda uspešno dodata");
         else setMsg("Došlo je do greške");

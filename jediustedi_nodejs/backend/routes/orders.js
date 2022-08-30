@@ -14,6 +14,7 @@ router.get(
   "/",
   passport.authenticate("korisnik", { session: false }),
   (req, res) => {
+    res.set("Access-Control-Allow-Origin", "http://localhost:3000");
     console.log(req);
     console.log("U get requestu imam info " + req.user._id);
     userID = mongoose.Types.ObjectId(req.user._id);
@@ -130,6 +131,7 @@ router.post(
   "/",
   passport.authenticate("korisnik", { session: false }),
   (req, res) => {
+    res.set("Access-Control-Allow-Origin", "http://localhost:3000");
     console.log("pronasao sam korisnika" + req.user._id);
     if (req.user._id === null) {
       res.status(401).send({ msg: "Korisnik nije autorizovan" });
@@ -171,6 +173,7 @@ router.post(
 );
 
 router.get("/:id", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   Order.findById(req.params.id)
     .then((o) => {
       if (o != null) res.status(200).send(o);
@@ -183,6 +186,7 @@ router.get("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   Order.findByIdAndDelete(req.params.id)
     .then((o) => {
       if (o != null) res.status(200).send(o);
@@ -192,6 +196,7 @@ router.delete("/:id", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "http://localhost:3000");
   console.log("novi");
   console.log(JSON.stringify(req.body));
   Order.findByIdAndUpdate(req.params.id, req.body)

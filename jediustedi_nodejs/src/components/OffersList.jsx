@@ -258,11 +258,17 @@ export default function EnhancedTable() {
   let [dataChange, setChange] = useState(0);
   useEffect(() => {
     axios
-      .get("http://localhost:5000/offers/personal", {
-        headers: {
-          Authorization: token,
+      .get(
+        "http://localhost:5000/offers/personal",
+        {
+          headers: {
+            Authorization: token,
+          },
         },
-      })
+        {
+          mode: "cors",
+        }
+      )
       .then(
         (res) => setRows(res.data)
         /*  setRows(
@@ -362,7 +368,9 @@ export default function EnhancedTable() {
 
     if (selectedStatus !== "sold") {
       axios
-        .delete(`http://localhost:5000/offers/${idDel}`)
+        .delete(`http://localhost:5000/offers/${idDel}`, {
+          mode: "cors",
+        })
         .then((res) => {
           setChange(++dataChange);
           window.alert("Ponuda je obrisana");
