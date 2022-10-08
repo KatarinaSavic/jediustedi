@@ -107,7 +107,7 @@ function Login() {
         setType(res.data.msg);
         //setLoggedUser(res.data.foundUser);
         if (res.data.msg === "korisnik") {
-          navigate("../offers");
+          navigate("../foryou");
         } else if (res.data.msg === "partner") {
           navigate("../addoffer");
         } else {

@@ -1,17 +1,20 @@
 const express = require("express"); //ucitavanje biblioteke express
 const router = express.Router(); //ucitavanje biblioteke router
 const User = require("../models/user.model"); //ucitavanje modela za fizicka lica
+const { default: mongoose } = require("mongoose");
 //bcrypt kriptovanje lozinke
 const { hashSync } = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
 router.post("/", (req, res) => {
   res.set("Access-Control-Allow-Origin", "http://localhost:3000");
 
-  var csrf_token = document
+  /*var csrf_token = document
     .querySelector("meta[name='csrf-token']")
     .getAttribute("content");
 
-  axios.defaults.headers.post["anti-csrf-token"] = csrf_token;
+  axios.defaults.headers.post["anti-csrf-token"] = csrf_token;*/
 
   //čuvanje podataka iz poziva servisa
   const t_name = req.body.name;
@@ -69,5 +72,63 @@ router.get("/:email/:pass", (req, res) => {
     }
   });
 });
+
+router.put(
+  "/",
+  passport.authenticate("korisnik", { session: false }),
+  (req, res) => {
+    res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+    userID = mongoose.Types.ObjectId(req.user._id);
+    //pronalazi korisnika na osnovu prosledjenog ID-ja i azurira polja sa novim vrednostima
+    User.findByIdAndUpdate(userID, req.body)
+      .then((u) => {
+        if (u != null) {
+          res.status(200).send(u);
+        } else res.status(404).send("Korisnik ne postoji");
+      })
+      .catch((err) => res.status(500).send(err));
+  }
+);
+
+router.get(
+  "/profileData",
+  passport.authenticate("korisnik", { session: false }),
+  (req, res) => {
+    res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+    console.log("tu sam ");
+    console.log(JSON.stringify(req.user));
+    userID = mongoose.Types.ObjectId(req.user._id);
+    console.log(JSON.stringify(userID));
+    User.findOne({ _id: userID }, (err, foundUser) => {
+      if (foundUser) {
+        //doslo je do neke greske
+        console.log(foundUser);
+        let cityCode;
+        if (foundUser.city === "Beograd") cityCode = 10;
+        else if (foundUser.city === "Nis") cityCode = 20;
+        else cityCode = 30;
+        const formatUser = {
+          userCityCode: cityCode,
+          preferences: foundUser.preferences,
+        };
+        res.status(200).send(formatUser);
+      } else {
+        console.log(err);
+        res.status(404).send("Korisnik ne postoji");
+      }
+      // ne postoji user sa prosledjenim mailom
+    });
+
+    /*User.findById(req.user._id)
+      .then((u) => {
+        if (u != null) res.status(200).send(u);
+        else {
+          res.status(404).send("Ponuda ne postoji");
+          console.log(res);
+        }
+      })
+      .catch((err) => res.status(500).send(err));*/
+  }
+);
 
 module.exports = router;

@@ -20,12 +20,21 @@ router.get("/", (req, res) => {
 
 router.get("/active", (req, res) => {
   res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+  const city = req.query.city;
+  const type = req.query.type;
+  let match = { status: "active" };
+  if (city !== undefined && city !== "") {
+    match.city = { $regex: "^" + city, $options: "-i" };
+  }
+  if (type !== undefined && type !== "") {
+    match.kitchenType = { $regex: "^" + type };
+  }
+  console.log("Match: ", match);
   Offer.aggregate([
     {
-      $match: {
-        status: "active",
-      },
+      $match: match,
     },
+
     {
       $lookup: {
         from: Partner.collection.name,
@@ -77,41 +86,73 @@ router.post(
     //res.set("X-CSRF-Token", req.csrfToken());
     //res.cookie("X-XSRF-TOKEN", req.csrfToken());
 
+    /*function getCity() {
+      
+      let city = "";
+      Partner.findOne({ _id: partnerID })
+        .then((p) => (city = p.city))
+        .catch((err) => console.log("Partner nije nadjen"));
+      return city;
+    }*/
+    let partnerID = req.user._id.toString();
+    let partner = {};
+    /*async function getPartner() {
+      partner = await Partner.findOne({ _id: partnerID }).select("city -_id");
+      const partnerCity = partner.city;
+      console.log("partner" + partnerCity);
+      console.log("partner" + partner);
+      //return partnerCity;
+    }*/
+    // getPartner();
     //axios.defaults.headers.post["X-CSRF-Token"] = axios.get("/getCSRFToken");
     //Axios.defaults.headers.common["X-CSRF-TOKEN"] = //req.csrfToken();
     console.log("pronasao sam korisnika" + req.user);
-    //čuvanje podataka iz poziva servisa
-    const t_dish = req.body.dish;
-    const t_dishImg = req.body.dishImg;
-    const t_price = req.body.price;
-    const t_restaurant = req.user._id;
-    //const t_city = req.user.city;
-    const t_city = "Beograd";
-    const t_status = req.body.status;
-    const t_dateFrom = req.body.dateFrom;
-    const t_endDate = req.body.endDate;
-    //kreiranje nove ponude
-    const offer = new Offer({
-      dish: t_dish,
-      dishImg: t_dishImg,
-      price: t_price,
-      restaurant: t_restaurant,
-      city: t_city,
-      status: t_status,
-      dateFrom: t_dateFrom,
-      endDate: t_endDate,
-    });
-    console.log(JSON.stringify(offer));
-    //cuvanje ponude u bazi
-    offer
-      .save()
-      .then((offer) => {
-        res.status(200).send(offer);
+    Partner.findOne({ _id: partnerID })
+      .select("city -_id")
+      .then((p) => {
+        //čuvanje podataka iz poziva servisa
+        const t_dish = req.body.dish;
+        const t_dishImg = req.body.dishImg;
+        const t_price = req.body.price;
+        const t_restaurant = req.user._id;
+        //const t_city = req.user.city;
+        //const t_city = "Beograd";
+        //const t_city = await(
+        //Partner.findOne({ _id: partnerID }).select("city")
+        //  ).exec();
+        const t_city = p.city;
+        console.log("tcity" + t_city);
+        //let t_city = getCity();
+        const t_status = req.body.status;
+        const t_dateFrom = req.body.dateFrom;
+        const t_endDate = req.body.endDate;
+        const t_kitchenName = req.body.kitchenName;
+        //kreiranje nove ponude
+        const offer = new Offer({
+          dish: t_dish,
+          dishImg: t_dishImg,
+          price: t_price,
+          restaurant: t_restaurant,
+          city: t_city,
+          status: t_status,
+          dateFrom: t_dateFrom,
+          endDate: t_endDate,
+          kitchenType: t_kitchenName,
+        });
+        console.log(JSON.stringify(offer));
+        //cuvanje ponude u bazi
+        offer
+          .save()
+          .then((offer) => {
+            res.status(200).send(offer);
+          })
+          .catch((err) => {
+            console.log(JSON.stringify(err));
+            res.status(400).send(err);
+          });
       })
-      .catch((err) => {
-        console.log(JSON.stringify(err));
-        res.status(400).send(err);
-      });
+      .catch((err) => console.log("Nije pronadjen partner"));
+
     // } else {
     // res.sendStatus(403);
     // res.end();

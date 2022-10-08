@@ -1,12 +1,14 @@
 import { React, useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Card } from "@material-ui/core";
+import Chip from "@mui/material/Chip";
 import {
   CardMedia,
   CardContent,
   Typography,
   CardActions,
   Button,
+  Grid,
 } from "@mui/material";
 import { UserContext } from "../context/UserContext";
 
@@ -31,6 +33,7 @@ function Offer(props) {
     endDate,
     makeOrderNovo,
     restaurantID,
+    kitchenType,
   } = props;
   console.log(props);
 
@@ -39,8 +42,10 @@ function Offer(props) {
     console.log(offerID);
     makeOrderNovo(itemID, dish, price, restaurantID, dateFrom, endDate);
   };
+  //class="col-3">
   return (
-    <div class="col-3">
+    <div>
+      {" "}
       <Card sx={{ maxWidth: 345 }}>
         <CardMedia component="img" alt={dish} height="240" image={dishImg} />
 
@@ -59,11 +64,20 @@ function Offer(props) {
             Vazi do:
             {Moment(endDate).locale("sr").format("LLL")}
           </Typography>
+          {kitchenType && <Chip label={kitchenType} color="success" />}
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={makeOrder}>
-            Kupi
-          </Button>
+          <Grid container justifyContent="flex-end">
+            <Button
+              sx={{ marginLeft: "auto" }}
+              size="small"
+              color="success"
+              variant="contained"
+              onClick={makeOrder}
+            >
+              Kupi
+            </Button>
+          </Grid>
         </CardActions>
       </Card>
     </div>

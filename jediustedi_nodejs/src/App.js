@@ -14,6 +14,8 @@ import Home from "./components/Home";
 import Offers from "./components/Offers";
 import OrderList from "./components/OrderList";
 import PartnerProfile from "./components/PartnerProfile";
+import CustomerProfile from "./components/CustomerProfile";
+import PersonalizedOffers from "./components/PersonalizedOffers";
 
 function App() {
   //cuvanje tipa ulogovanog korisnika
@@ -41,6 +43,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/becomepartner" element={<Partner />} />
             <Route path="/partnerprofile" element={<PartnerProfile />} />
+            <Route path="/customerprofile" element={<CustomerProfile />} />
+            <Route path="/foryou" element={<PersonalizedOffers />} />
           </Routes>
         </UserContext.Provider>
       </BrowserRouter>

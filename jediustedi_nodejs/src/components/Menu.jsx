@@ -27,6 +27,7 @@ function Menu() {
             Moj profil
           </Link>
         )}
+
         {type != "partner" && (
           <Link to="/offers" class="nav-item">
             Restorani
@@ -42,11 +43,17 @@ function Menu() {
             Postani partner
           </Link>
         )}
+        {type === "korisnik" && (
+          <Link to="/customerprofile" class="nav-item">
+            Moj profil
+          </Link>
+        )}
         {type === null && (
           <Link to="/login" class="nav-item">
             Prijavi se
           </Link>
         )}
+
         {(type === "partner" || type === "korisnik") && (
           <Link
             to="/"

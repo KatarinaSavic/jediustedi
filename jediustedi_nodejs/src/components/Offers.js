@@ -3,6 +3,11 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import Offer from "./Offer";
 import { useNavigate } from "react-router-dom";
+import { Paper, Container, TextField, Box, Button, Grid } from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import { SipTwoTone } from "@mui/icons-material";
 
 //TO DO
 //Srediti izgled
@@ -16,31 +21,53 @@ function Offers(props) {
   const [cards, setCards] = useState([]);
   const [userID, setUserID] = useState(null);
   const [restaurantName, setRestaurantName] = useState("");
+  const [kitchenType, setKitchenType] = useState();
+
+  function onChangeKitchen(event) {
+    const temp = event.target.value;
+    setKitchenType(temp);
+  }
 
   const navigate = useNavigate();
   //ucitavanje svih aktivnih ponuda iz baze
   useEffect(() => {
-    //  if (loggedUser !== null) setUserID(loggedUser._id);
-    console.log("useEffect once");
-    /* axios
-      .get("http://localhost:5000/offers")
-      .then((res) => {
-        setCurrentOffers(
-          res.data.filter((o) => {
-            return o.status === "active";
-          })
-        );
-        setCards(
-          res.data.filter((o) => {
-            return o.status === "active";
-          })
-        );
-      })
-      .catch((err) => console.log(err));*/
+    let type = "";
+    switch (kitchenType) {
+      case 10:
+        type = "domaca";
+        break;
+      case 20:
+        type = "azijska";
+        break;
+      case 30:
+        type = "italijanska";
+        break;
+      case 40:
+        type = "meksicka";
+        break;
+      case 50:
+        type = "indijska";
+        break;
+      case 60:
+        type = "americka";
+        break;
+      case 70:
+        type = "peciva";
+        break;
+      case 80:
+        type = "namirnice";
+        break;
+    }
+
     axios
-      .get("http://localhost:5000/offers/active", {
-        mode: "cors",
-      })
+      .get(
+        "http://localhost:5000/offers/active",
+
+        {
+          headers: { mode: "cors" },
+          params: { city: city, type: type },
+        }
+      )
       .then((res) => {
         setCurrentOffers(res.data);
         setCards(res.data);
@@ -71,18 +98,63 @@ function Offers(props) {
 
   useEffect(() => {
     // console.log("useeffect " + cards);
-    if (clicked > 0) {
-      var newList = filterData;
-      setCards(newList);
-    } else setCards(currentoffers);
+    // if (clicked > 0) {
+    //   var newList = filterData;
+    //   //setCards(newList);
+    // } else setCards(currentoffers);
 
-    /*setCards(
-     (currentoffers) => {
-      console.log(clicked);
-      return currentoffers.filter((item) => {
-        return item.city === city;
-      });
-    });*/
+    // /*setCards(
+    //  (currentoffers) => {
+    //   console.log(clicked);
+    //   return currentoffers.filter((item) => {
+    //     return item.city === city;
+    //   });
+    // });*/
+    let type = "";
+    switch (kitchenType) {
+      case 10:
+        type = "domaca";
+        break;
+      case 20:
+        type = "azijska";
+        break;
+      case 30:
+        type = "italijanska";
+        break;
+      case 40:
+        type = "meksicka";
+        break;
+      case 50:
+        type = "indijska";
+        break;
+      case 60:
+        type = "americka";
+        break;
+      case 70:
+        type = "peciva";
+        break;
+      case 80:
+        type = "namirnice";
+        break;
+    }
+
+    axios
+      .get(
+        "http://localhost:5000/offers/active",
+
+        {
+          headers: { mode: "cors" },
+          params: { city: city, type: type },
+        }
+      )
+      .then((res) => {
+        setCurrentOffers(res.data);
+        setCards(res.data);
+        console.log(res.data);
+        console.log("cur off" + JSON.stringify(currentoffers));
+        console.log("card" + JSON.stringify(cards));
+      })
+      .catch((err) => console.log(err));
   }, [clicked]);
 
   const token = localStorage.getItem("token");
@@ -186,35 +258,88 @@ function Offers(props) {
 
   //<h3>Unesite grad u kome se nalazite {type}</h3>
   return (
-    <div class="containter-offers">
-      <div class="city-selection">
-        <h3>Unesite grad u kome se nalazite </h3>
-        <input
-          onChange={takeCity}
-          type="text"
-          placeholder="Beograd/Novi Sad/Nis"
-        ></input>
-        <button onClick={buttonClicked}>Pogledaj ponudu</button>
-      </div>
+    <div class="container">
+      <Paper>
+        <Box pb={3} sx={{ flexGrow: 1 }}>
+          <Grid
+            container
+            spacing={2}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Grid item xs={3}>
+              <InputLabel id="demo-simple-select-label">
+                Unesite grad u kome se nalazite
+              </InputLabel>
+              <TextField
+                label="Grad"
+                color="success"
+                onChange={takeCity}
+                placeholder="Beograd/Novi Sad/Nis"
+                //value={name}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <InputLabel id="demo-simple-select-label">
+                Izaberite vrstu kuhinje
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={kitchenType}
+                label="Vrsta kuhinje"
+                onChange={onChangeKitchen}
+                sx={{ minWidth: 130 }}
+              >
+                <MenuItem value={10}>Domaca</MenuItem>
+                <MenuItem value={20}>Azijska</MenuItem>
+                <MenuItem value={30}>Italijanska</MenuItem>
+                <MenuItem value={40}>Meksicka</MenuItem>
+                <MenuItem value={50}>Indijska</MenuItem>
+                <MenuItem value={60}>Americka</MenuItem>
+                <MenuItem value={70}>Peciva</MenuItem>
+                <MenuItem value={80}>Namirnice</MenuItem>
+                <MenuItem value={90}></MenuItem>
+              </Select>
+            </Grid>
+
+            <Grid item xs={2}>
+              <Button
+                variant="contained"
+                type="submit"
+                color="success"
+                onClick={buttonClicked}
+              >
+                Pretrazi ponudu
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Paper>
+
       <div class="row">
         {cards.map((item) => {
           console.log("itemid" + JSON.stringify(item.restaurant_details[0]));
 
           //getRestaurantName(item.restaurant);
           return (
-            <Offer
-              key={item._id}
-              itemID={item._id}
-              dish={item.dish}
-              dishImg={item.dishImg}
-              price={item.price}
-              restaurant={item.restaurant_details[0].name}
-              city={item.city}
-              dateFrom={item.dateFrom}
-              endDate={item.endDate}
-              makeOrderNovo={makeOrderNovo}
-              restaurantID={item.restaurant}
-            />
+            <div class="col-lg-3 col-sm-12">
+              <Offer
+                key={item._id}
+                itemID={item._id}
+                dish={item.dish}
+                dishImg={item.dishImg}
+                price={item.price}
+                restaurant={item.restaurant_details[0].name}
+                city={item.city}
+                dateFrom={item.dateFrom}
+                endDate={item.endDate}
+                makeOrderNovo={makeOrderNovo}
+                restaurantID={item.restaurant}
+                kitchenType={item.kitchenType}
+              />
+            </div>
           );
         })}
       </div>

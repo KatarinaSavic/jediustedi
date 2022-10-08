@@ -8,6 +8,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Stack from "@mui/material/Stack";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useNavigate } from "react-router-dom";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
 
 function CreateOffer() {
   const { type, setType, loggedUser, setLoggedUser } = useContext(UserContext);
@@ -21,6 +24,8 @@ function CreateOffer() {
   const [status, setStatus] = useState("active");
   const [dateFrom, setDateFrom] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [kitchenType, setKitchenType] = useState("");
+  const [kitchenName, setKitchenName] = useState("");
   const [msg, setMsg] = useState("");
   const [csrfToken, setToken] = useState("");
 
@@ -39,6 +44,26 @@ function CreateOffer() {
   const onChangePrice = (e) => {
     setPrice(e.target.value);
   };
+  const onChangeKitchen = (e) => {
+    setKitchenType(e.target.value);
+    if (e.target.value === 10) {
+      setKitchenName("domaca");
+    } else if (e.target.value === 20) {
+      setKitchenName("azijska");
+    } else if (e.target.value === 30) {
+      setKitchenName("italijanska");
+    } else if (e.target.value === 40) {
+      setKitchenName("meksicka");
+    } else if (e.target.value === 50) {
+      setKitchenName("indijska");
+    } else if (e.target.value === 60) {
+      setKitchenName("americka");
+    } else if (e.target.value === 70) {
+      setKitchenName("peciva");
+    } else {
+      setKitchenName("namirnice");
+    }
+  };
 
   //console.log("token u reactu " + response.data.CSRFToken);
   //axios.defaults.headers.post["X-CSRF-Token"] = response.data.CSRFToken;
@@ -50,9 +75,9 @@ function CreateOffer() {
     //axios.defaults.headers.trace = {};
     //axios.defaults.headers.trace["anti-csrf-token"] = response.data.CSRFToken;
   };
-
-  useEffect(() => {
-    /*axios
+*/
+  /* useEffect(() => {
+    axios
       .get("http://localhost:5000/getCSRFToken", {
         headers: {
           Accept: "application/json",
@@ -64,11 +89,11 @@ function CreateOffer() {
         axios.defaults.headers.post["X-CSRF-Token"] = res.data.CSRFToken;
         //axios.defaults.headers.common["x-csrf-token"] = res.data.csrfToken;
         axios.defaults.withCredentials = true;
-        setToken(res.data.CSRFToken);
-      });*/
-  // getCSRFToken();
-  //}, []);*/
-
+        //setToken(res.data.CSRFToken);
+      });
+    // getCSRFToken();
+  }, []);
+*/
   const onSubmit = (e) => {
     console.log("sacuvaj");
     e.preventDefault();
@@ -86,6 +111,7 @@ function CreateOffer() {
           status,
           dateFrom,
           endDate,
+          kitchenName,
         },
         //{
         //withCredentials: true,
@@ -168,6 +194,27 @@ function CreateOffer() {
               </Box>
             </Stack>
           </LocalizationProvider>
+          <Box m={2} pt={3}>
+            {" "}
+            <InputLabel id="demo-simple-select-label">Vrsta kuhinje</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={kitchenType}
+              label="Vrsta kuhinje"
+              onChange={onChangeKitchen}
+              sx={{ minWidth: 130 }}
+            >
+              <MenuItem value={10}>Domaca</MenuItem>
+              <MenuItem value={20}>Azijska</MenuItem>
+              <MenuItem value={30}>Italijanska</MenuItem>
+              <MenuItem value={40}>Meksicka</MenuItem>
+              <MenuItem value={50}>Indijska</MenuItem>
+              <MenuItem value={60}>Americka</MenuItem>
+              <MenuItem value={70}>Peciva</MenuItem>
+              <MenuItem value={80}>Namirnice</MenuItem>
+            </Select>
+          </Box>
           <div>
             <h2>{msg}</h2>
           </div>

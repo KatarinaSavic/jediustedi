@@ -6,6 +6,8 @@ const userSchema = mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   //type: { type: String, required: true },
+  city: { type: String },
+  preferences: { type: [String] },
 });
 
 //definisanje modela za fizicko lice

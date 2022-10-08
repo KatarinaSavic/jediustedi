@@ -10,6 +10,7 @@ const offerSchema = new mongoose.Schema({
   restaurant: { type: mongoose.Schema.Types.ObjectId, ref: "Partner" },
   dateFrom: { type: Date },
   endDate: { type: Date },
+  kitchenType: { type: String },
 });
 //definisanje modela za ponude poslovnih partnera
 const Offer = mongoose.model("Offer", offerSchema);

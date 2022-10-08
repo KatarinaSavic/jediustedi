@@ -29,7 +29,7 @@ passport.use(
 passport.use(
   "korisnik",
   new JwtStrategy(opts, function (jwt_payload, done) {
-    console.log("Passport.js payload" + jwt_payload);
+    console.log("Passport.js payload" + JSON.stringify(jwt_payload));
 
     User.findOne({ _id: jwt_payload.id }, function (err, user) {
       if (err) {

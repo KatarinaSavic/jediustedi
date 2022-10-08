@@ -8,6 +8,7 @@ const offers = require("./routes/offers");
 const partners = require("./routes/partners");
 const login = require("./routes/login");
 const orders = require("./routes/orders");
+const recommendations = require("./routes/recommendation");
 //JWT
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
@@ -21,14 +22,14 @@ const { hashSync } = require("bcrypt");
 const { NestCamWiredStand } = require("@mui/icons-material");
 //antiCSFR token
 
-////const csrfProtection = csrf({ cookie: true });
+//const csrfProtection = csrf({ cookie: true });
 
 /*const corsOptions = {
   origin: "http://localhost:3000",
- credentials: true, //access-control-allow-credentials:true
-};
+  credentials: true, //access-control-allow-credentials:true
+};*/
 
-app.use(cors(corsOptions));*/
+//app.use(cors(corsOptions));
 app.use(cors());
 app.use(express.json());
 
@@ -44,6 +45,7 @@ app.use("/offers", offers);
 app.use("/partners", partners);
 app.use("/login", login);
 app.use("/orders", orders);
+app.use("/recommendations", recommendations);
 
 /*app.get("/getCSRFToken", (req, res) => {
   console.log("get token na beku" + req.csrfToken());
